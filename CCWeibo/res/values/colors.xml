@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- xml files under values can be created arbitrarily -->
+    <color name="light_orange">#8f90</color>
+
+</resources>

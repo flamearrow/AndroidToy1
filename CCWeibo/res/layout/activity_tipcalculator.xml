@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:android1="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tipCalculatorLayout"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android1:gravity="center"
+    android1:padding="10dp"
+    android1:shrinkColumns="1,2,3" >
+
+    <!-- android1:stretchColumns indicates column 1, 2, 3 will expand to fill the entire width, while column 0 will be the width as its widest element -->
+
+    <TableRow
+        android1:id="@+id/tableRow0"
+        android1:layout_width="wrap_content"
+        android1:layout_height="fill_parent"
+        android:layout_weight="1" >
+
+        <TextView
+            android1:id="@+id/billTextView"
+            android1:layout_width="wrap_content"
+            android1:layout_height="wrap_content"
+            android1:layout_gravity="right|center_vertical"
+            android1:text="@string/billText"
+            android1:textColor="#000" />
+
+        <EditText
+            android1:id="@+id/billEditTextView"
+            android1:layout_width="wrap_content"
+            android1:layout_height="wrap_content"
+            android1:layout_gravity="center_vertical"
+            android1:layout_span="3"
+            android1:ems="10"
+            android1:inputType="numberDecimal"
+            android1:text="@string/unsetPrice" />
+    </TableRow>
+
+    <TableRow
+        android1:id="@+id/tableRow1"
+        android1:layout_width="wrap_content"
+        android1:layout_height="fill_parent"
+        android:layout_weight="1" >
+
+        <TextView
+            android1:id="@+id/tv1row1"
+            android1:layout_width="wrap_content"
+            android1:layout_height="wrap_content"
+            android:layout_column="1"
+            android1:layout_gravity="center"
+            android1:text="@string/tenText"
+            android1:textColor="#000" />
+
+        <TextView
+            android1:id="@+id/tv1row2"
+            android1:layout_width="wrap_content"
+            android1:layout_height="wrap_content"
+            android:layout_column="2"
+            android1:layout_gravity="center"
+            android1:text="@string/fifteenText"
+            android1:textColor="#000" />
+
+        <TextView
+            android1:id="@+id/tv1row3"
+            android1:layout_width="wrap_content"
+            android1:layout_height="wrap_content"
+            android:layout_column="3"
+            android1:layout_gravity="center"
+            android1:text="@string/twentyText"
+            android1:textColor="#000" />
+    </TableRow>
+
+    <TableRow
+        android1:id="@+id/tableRow2"
+        android1:layout_width="wrap_content"
+        android1:layout_height="fill_parent" 
+        android:layout_weight="1">
+
+        <TextView
+            android1:id="@+id/tipTextView"
+            android1:layout_width="wrap_content"
+            android1:layout_height="wrap_content"
+            android1:layout_gravity="right"
+            android1:padding="5dp"
+            android1:text="@string/tipText"
+            android1:textColor="#000" />
+
+        <EditText
+            android1:id="@+id/tenTipEditTextView"
+            android1:layout_width="wrap_content"
+            android1:layout_height="wrap_content"
+            android1:cursorVisible="false"
+            android1:ems="10"
+            android1:focusable="false"
+            android1:inputType="numberDecimal"
+            android1:longClickable="false"
+            android1:text="@string/unsetPrice" />
+
+        <EditText
+            android1:id="@+id/fifteenTipEditTextView"
+            android1:layout_width="wrap_content"
+            android1:layout_height="wrap_content"
+            android1:cursorVisible="false"
+            android1:ems="10"
+            android1:focusable="false"
+            android1:inputType="numberDecimal"
+            android1:longClickable="false"
+            android1:text="@string/unsetPrice" >
+        </EditText>
+
+        <EditText
+            android1:id="@+id/twentyTipEditTextView"
+            android1:layout_width="wrap_content"
+            android1:layout_height="wrap_content"
+            android1:cursorVisible="false"
+            android1:ems="10"
+            android1:focusable="false"
+            android1:inputType="numberDecimal"
+            android1:longClickable="false"
+            android1:text="@string/unsetPrice" >
+        </EditText>
+    </TableRow>
+
+    <TableRow
+        android1:id="@+id/tableRow3"
+        android1:layout_width="wrap_content"
+        android1:layout_height="fill_parent" 
+        android:layout_weight="1">
+
+        <TextView
+            android1:id="@+id/totalTextView"
+            android1:layout_width="wrap_content"
+            android1:layout_height="wrap_content"
+            android1:layout_gravity="right"
+            android1:padding="5dp"
+            android1:text="@string/totalText"
+            android1:textColor="#000" />
+
+        <EditText
+            android1:id="@+id/tenTotalEditTextView"
+            android1:layout_width="wrap_content"
+            android1:layout_height="wrap_content"
+            android1:cursorVisible="false"
+            android1:ems="10"
+            android1:focusable="false"
+            android1:inputType="numberDecimal"
+            android1:longClickable="false"
+            android1:text="@string/unsetPrice" >
+        </EditText>
+
+        <EditText
+            android1:id="@+id/fifteenTotalEditTextView"
+            android1:layout_width="wrap_content"
+            android1:layout_height="wrap_content"
+            android1:cursorVisible="false"
+            android1:ems="10"
+            android1:focusable="false"
+            android1:inputType="numberDecimal"
+            android1:longClickable="false"
+            android1:text="@string/unsetPrice" >
+        </EditText>
+
+        <EditText
+            android1:id="@+id/twentyTotalEditTextView"
+            android1:layout_width="wrap_content"
+            android1:layout_height="wrap_content"
+            android1:cursorVisible="false"
+            android1:ems="10"
+            android1:focusable="false"
+            android1:inputType="numberDecimal"
+            android1:longClickable="false"
+            android1:text="@string/unsetPrice" >
+
+            <requestFocus />
+        </EditText>
+    </TableRow>
+
+    <TableRow
+        android1:id="@+id/tableRow4"
+        android1:layout_width="wrap_content"
+        android1:layout_height="fill_parent"
+        android:layout_weight="1" >
+
+        <TextView
+            android1:id="@+id/customTextView"
+            android1:layout_height="fill_parent"
+            android1:layout_gravity="right|center_vertical"
+            android1:padding="5dp"
+            android1:paddingTop="5dp"
+            android1:text="@string/customText"
+            android1:textColor="#000" />
+
+        <SeekBar
+            android1:id="@+id/custtomSeekbar"
+            android1:layout_width="match_parent"
+            android1:layout_height="wrap_content"
+            android1:layout_span="2"
+            android1:focusable="false"
+            android1:paddingBottom="5dp"
+            android1:paddingLeft="8dp"
+            android1:paddingRight="8dp"
+            android1:progress="18" />
+
+        <TextView
+            android1:id="@+id/custTomtiptextView"
+            android1:layout_height="match_parent"
+            android1:paddingTop="5dp"
+            android1:text="@string/tipPercentText"
+            android1:textColor="#000" />
+    </TableRow>
+
+    <TableRow
+        android1:id="@+id/tableRow5"
+        android1:layout_width="wrap_content"
+        android1:layout_height="fill_parent" 
+        android:layout_weight="1">
+
+        <TextView
+            android1:id="@+id/realTipTextView"
+            android1:layout_width="wrap_content"
+            android1:layout_height="wrap_content"
+            android1:layout_gravity="right"
+            android1:padding="5dp"
+            android1:text="@string/tipText"
+            android1:textColor="#000" />
+
+        <EditText
+            android1:id="@+id/realTipEditTextView"
+            android1:layout_width="wrap_content"
+            android1:layout_height="wrap_content"
+            android1:cursorVisible="false"
+            android1:ems="10"
+            android1:focusable="false"
+            android1:inputType="numberDecimal"
+            android1:longClickable="false"
+            android1:text="@string/unsetPrice" />
+
+        <TextView
+            android1:id="@+id/realTotalTextView"
+            android1:layout_width="wrap_content"
+            android1:layout_height="wrap_content"
+            android1:text="@string/totalText"
+            android1:textColor="#000" />
+
+        <EditText
+            android1:id="@+id/realTotalEditTextView"
+            android1:layout_width="wrap_content"
+            android1:layout_height="wrap_content"
+            android1:cursorVisible="false"
+            android1:ems="10"
+            android1:focusable="false"
+            android1:inputType="numberDecimal"
+            android1:longClickable="false"
+            android1:text="@string/unsetPrice" >
+        </EditText>
+    </TableRow>
+
+</TableLayout>
