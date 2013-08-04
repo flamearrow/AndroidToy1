@@ -31,7 +31,7 @@ public class FavouriteTwitterAct extends Activity {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_favtwitter);
-
+		// MLGB!
 		// should have a file names 'searches'
 		savedSearches = getSharedPreferences("searches", MODE_PRIVATE);
 		// all ui components are inherited from View
