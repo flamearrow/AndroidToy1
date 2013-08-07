@@ -3,5 +3,9 @@
 
     <dimen name="tagButtonWidth">230dp</dimen>
     <dimen name="editButtonWidth">80dp</dimen>
-
-</resources>
+    <dimen name="title_size">25sp</dimen>
+    <dimen name="flag_width">227dp</dimen>
+    <dimen name="flag_height">150dp</dimen>
+    <dimen name="answer_size">40sp</dimen>
+    <dimen name="text_size">20sp</dimen>
+</resources>
