@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <!--
+    	android:duration: how many milis will this animation last
+    	android:fromXDelta: the starting position of the animation %5 means right of this View's width, -%5p means left of this View's parents width
+    	android:startOffset: when should this animation happen, by default all animations start at the same time
+    -->
+    <translate
+        android:duration="100"
+        android:fromXDelta="0"
+        android:toXDelta="-5%p" />
+    <translate
+        android:duration="100"
+        android:fromXDelta="-5%p"
+        android:startOffset="100"
+        android:toXDelta="5%p" />
+    <translate
+        android:duration="100"
+        android:fromXDelta="5%p"
+        android:startOffset="200"
+        android:toXDelta="-5%p" />
+
+</set>

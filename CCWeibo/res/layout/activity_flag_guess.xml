@@ -30,6 +30,8 @@
         android:textSize="@dimen/text_size" >
     </TextView>
 
+    <!-- android:adjustViewBounds sets whether we should keep width/height ratio when resizing -->
+
     <ImageView
         android:id="@+id/flagImageView"
         android:layout_width="@dimen/flag_width"
