@@ -186,13 +186,12 @@ public class FlagQuizGame extends Activity {
 		((Button) randomTableRow.getChildAt(column)).setText(countryName);
 	}
 
-	// called when a guess Button is touched
 	private OnClickListener guessButtonListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			submitGuess((Button) v); // pass selected Button to submitGuess
-		} // end method onClick
-	}; // end answerButtonListener
+			submitGuess((Button) v);
+		}
+	};
 
 	private void submitGuess(Button b) {
 
