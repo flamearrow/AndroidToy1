@@ -29,4 +29,8 @@ public class WelcomAct extends Activity {
 		startActivity(new Intent(this, FavouriteTwitterAct.class));
 	}
 
+	public void startFlagQuiz(View view) {
+		startActivity(new Intent(this, FlagQuizGame.class));
+	}
+
 }

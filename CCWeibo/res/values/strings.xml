@@ -38,6 +38,7 @@
     <string name="confirmMessage">         This will delete all saved searches</string>
     <string name="choices">Select Number of Choicies</string>
     <string name="correct">correct</string>
+    <string name="flagQuiz">flagQuiz</string>
     <string name="guess_country">Guess the Country</string>
     <string name="guesses">guesses</string>
     <string name="incorrect_answer">Incorrect!</string>
