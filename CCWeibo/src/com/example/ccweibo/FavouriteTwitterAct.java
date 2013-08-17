@@ -44,7 +44,7 @@ public class FavouriteTwitterAct extends Activity {
 		clearTagsButton.setOnClickListener(clearTagsButtonListener);
 		refreshButtons(null);
 	}
-
+	
 	// recreate tag and search pairs based on the result from file
 	private void refreshButtons(String newTag) {
 		String[] tags = savedSearches.getAll().keySet().toArray(new String[0]);
