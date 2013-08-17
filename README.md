@@ -1,4 +1,5 @@
 CCWeibo
 =======
 
-will evolve into a Weibo android app!
+Showcase basic android features
+
