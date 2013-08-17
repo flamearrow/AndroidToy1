@@ -44,7 +44,7 @@ public class FlagQuizGame extends Activity {
 	private Random random;
 	private Handler handler;
 	private Animation shakeAnimation;
-
+ 
 	private TextView answerTextView;
 	private TextView questionNumberTextView;
 	private ImageView flagImageView;
