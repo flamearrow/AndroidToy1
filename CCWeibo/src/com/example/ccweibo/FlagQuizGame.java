@@ -44,7 +44,7 @@ public class FlagQuizGame extends Activity {
 	private Random random;
 	private Handler handler;
 	private Animation shakeAnimation;
-   
+
 	private TextView answerTextView;
 	private TextView questionNumberTextView;
 	private ImageView flagImageView;
@@ -164,6 +164,8 @@ public class FlagQuizGame extends Activity {
 	}
 
 	private void resetQuiz() {
+		// Assets are not compiled with a given name, all files can be accessed
+		// during compile time
 		AssetManager assets = getAssets();
 		fileNameList.clear();
 		try {

@@ -67,4 +67,12 @@
         <item>9</item>
     </string-array>
 
+    <string name="canonGame">Canon Game</string>
+    <!-- %a$d print ath param in (d)ecimal format -->
+    <string name="results_format">Shots fired: %1$d\nTotal time: %2$.1f</string>
+    <string name="reset_game">Reset Game</string>
+    <string name="win">You win!</string>
+    <string name="lose">You lose!</string>
+    <string name="time_remaining_format">Time remaining: %.1f seconds</string>
+
 </resources>
