@@ -54,7 +54,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".CanonGame"
+            android:name="com.example.canonGame.CanonGame"
             android:label="@string/canonGame"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysHidden" >

@@ -38,24 +38,31 @@
         android:text="@string/tipCalc" />
 
     <Button
+        android:id="@+id/button3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/button1"
+        android:onClick="startFlagQuiz"
+        android:text="@string/flagQuiz" />
+
+    <Button
         android:id="@+id/button2"
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_centerInParent="false"
-        android:layout_marginTop="33dp"
-        android:layout_toRightOf="@id/welcomeText"
+        android:layout_toRightOf="@+id/button1"
         android:onClick="startFavTwt"
         android:text="@string/startFavTwt" />
 
     <Button
-        android:id="@+id/button3"
+        android:id="@+id/button4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/button1"
-        android:layout_toLeftOf="@+id/welcomeText"
-        android:onClick="startFlagQuiz"
-        android:text="@string/flagQuiz" />
+        android:layout_alignLeft="@+id/button3"
+        android:layout_below="@+id/button3"
+        android:onClick="startCannonGame"
+        android:text="@string/canonGame" />
 
 </RelativeLayout>

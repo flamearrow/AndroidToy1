@@ -9,13 +9,29 @@ import android.view.GestureDetector.SimpleOnGestureListener;
 
 import com.example.ccweibo.R;
 
+/**
+ * Cannon game uses a seperate thread CannonView.cannonThread to keep track of
+ * time and update components and draw them
+ * 
+ * run() is a while(true) loop, and each time it's called
+ * System.currentTimeMillis() is called to calculate the time difference between
+ * last draw time, and time*velocity is added to each components previous
+ * position
+ * 
+ * 
+ * Note in order to let the customized SurfaceView to show up on the screen, the
+ * corresponding xml file shouldn't have a background color
+ * 
+ * @author flamearrow
+ * 
+ */
 public class CanonGame extends Activity {
 	private GestureDetector gestureDetector;
 	private CannonView cannonView;
 
 	private SimpleOnGestureListener gestureListener = new SimpleOnGestureListener() {
 		public boolean onDoubleTap(android.view.MotionEvent e) {
-			cannonView.fireCannonBall();
+			cannonView.fireCannonBall(e);
 			return true;
 		};
 	};
@@ -45,6 +61,8 @@ public class CanonGame extends Activity {
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
+		// catch the the double tab event from onTouchEvent() and pass it the
+		// the gestureListener
 		int action = event.getAction();
 		// touch or drag on THIS activity
 		if (action == MotionEvent.ACTION_DOWN

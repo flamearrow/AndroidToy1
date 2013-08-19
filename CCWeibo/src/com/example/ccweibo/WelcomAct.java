@@ -1,5 +1,7 @@
 package com.example.ccweibo;
 
+import com.example.canonGame.CanonGame;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -31,6 +33,10 @@ public class WelcomAct extends Activity {
 
 	public void startFlagQuiz(View view) {
 		startActivity(new Intent(this, FlagQuizGame.class));
+	}
+
+	public void startCannonGame(View view) {
+		startActivity(new Intent(this, CanonGame.class));
 	}
 
 }
