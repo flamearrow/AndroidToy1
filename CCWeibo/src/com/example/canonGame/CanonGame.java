@@ -47,6 +47,8 @@ public class CanonGame extends Activity {
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
 	}
 
+	// called when this activity is sent to background, not saving game state
+	// here
 	@Override
 	protected void onPause() {
 		super.onPause();
