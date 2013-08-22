@@ -56,7 +56,7 @@ public class TetrisActivity extends Activity {
 	// now support this: move left/right when single table left/right part of
 	// the screen
 	// rotate clockwise when double tap
-	// drop when swipe down
+	// drop when swipe down 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		// Toast can be used to make a little quick text message box
