@@ -21,6 +21,7 @@ public class TetrisView extends SurfaceView implements Callback {
 	private static final int MATRIX_HEIGHT = 18;
 	private static final int MATRIX_WIDTH = 18;
 	private static final int SQUARE_EDGE_WIDTH = 2;
+	private static final int SQUARE_EDGE_COLOR = Color.YELLOW;
 
 	private TetrisThread _thread;
 
@@ -88,11 +89,21 @@ public class TetrisView extends SurfaceView implements Callback {
 		Point currentPoint = new Point(0, _screenHeight);
 		for (int i = MATRIX_HEIGHT - 1; i >= 0; i--) {
 			for (int j = 0; j < MATRIX_WIDTH; j++) {
-				_matrixPaint.setColor(_colorMatrix[i][j]);
+				// draw edge
+				_matrixPaint.setColor(SQUARE_EDGE_COLOR);
 				canvas.drawRect(currentPoint.x, currentPoint.y - blockEdge,
 						currentPoint.x + blockEdge, currentPoint.y,
 						_matrixPaint);
+				// draw squre
+				_matrixPaint.setColor(_colorMatrix[i][j]);
+				canvas.drawRect(currentPoint.x + SQUARE_EDGE_WIDTH,
+						currentPoint.y - blockEdge + SQUARE_EDGE_WIDTH,
+						currentPoint.x + blockEdge - SQUARE_EDGE_WIDTH,
+						currentPoint.y - SQUARE_EDGE_WIDTH, _matrixPaint);
+				currentPoint.offset(blockEdge, 0);
 			}
+			// move to the start of next line
+			currentPoint.offset(-MATRIX_WIDTH * blockEdge, -blockEdge);
 		}
 	}
 
