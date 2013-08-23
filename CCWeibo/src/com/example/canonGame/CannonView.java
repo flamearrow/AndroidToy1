@@ -85,7 +85,7 @@ public class CannonView extends SurfaceView implements Callback {
 		super(context, attrs);
 		activity = (Activity) context;
 
-		// wtf?
+		// notify myself when the app loads/terminates
 		getHolder().addCallback(this);
 
 		blocker = new Line();
