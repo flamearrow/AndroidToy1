@@ -80,7 +80,7 @@ public class TetrisView extends SurfaceView implements Callback {
 	private void drawComponents(Canvas canvas) {
 		// starting from bottom left, draw a MATRIX_HEIGHT x MATRIX_WIDTH matrix
 		// each block has a black frame and filled with color at
-		// _colorMatrix[i][j]
+		// _colorMatrix[i][j] 
 
 		// a squre's edge length, should accommodate with width
 		int blockEdge = _screenWidth / MATRIX_WIDTH;
