@@ -18,6 +18,7 @@ import com.example.ccweibo.R;
 public class TetrisActivity extends Activity {
 	private GestureDetector _gesDect;
 	private TetrisView _tetrisView;
+	private TetrisActivity _act = this;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -29,18 +30,22 @@ public class TetrisActivity extends Activity {
 		_gesDect = new GestureDetector(this, new SimpleOnGestureListener() {
 			@Override
 			public boolean onDoubleTap(MotionEvent e) {
+				Toast.makeText(_act, "doubleTap!!", Toast.LENGTH_SHORT).show();
 				_tetrisView.rotate();
 				return true;
 			}
 
 			@Override
 			public boolean onSingleTapConfirmed(MotionEvent e) {
+				Toast.makeText(_act, "singleTap!!", Toast.LENGTH_SHORT).show();
 				_tetrisView.moveLR(e);
 				return super.onSingleTapConfirmed(e);
 			}
 		});
 	}
 
+	// called when this method is sent background, should either pause the
+	// thread or release resources
 	@Override
 	protected void onPause() {
 		super.onPause();
@@ -56,12 +61,12 @@ public class TetrisActivity extends Activity {
 	// now support this: move left/right when single table left/right part of
 	// the screen
 	// rotate clockwise when double tap
-	// drop when swipe down 
+	// drop when swipe down
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		// Toast can be used to make a little quick text message box
-		Toast.makeText(this, "mlgb don't touch me!!", Toast.LENGTH_SHORT)
-				.show();
+		// Toast.makeText(this, "mlgb don't touch me!!", Toast.LENGTH_SHORT)
+		// .show();
 		// explicitly call onTouchEvent - it's a bit weird
 		return _gesDect.onTouchEvent(event);
 	}

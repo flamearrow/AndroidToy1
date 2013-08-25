@@ -1,12 +1,13 @@
 package com.example.ccweibo;
 
-import com.example.canonGame.CanonGame;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
+
+import com.example.canonGame.CanonGame;
+import com.example.tetris.TetrisActivity;
 
 public class WelcomAct extends Activity {
 
@@ -37,6 +38,10 @@ public class WelcomAct extends Activity {
 
 	public void startCannonGame(View view) {
 		startActivity(new Intent(this, CanonGame.class));
+	}
+
+	public void startTetris(View view) {
+		startActivity(new Intent(this, TetrisActivity.class));
 	}
 
 }

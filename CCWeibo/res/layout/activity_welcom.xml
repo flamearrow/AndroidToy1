@@ -65,4 +65,14 @@
         android:onClick="startCannonGame"
         android:text="@string/canonGame" />
 
+    <Button
+        android:id="@+id/button5"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/button1"
+        android:layout_toRightOf="@+id/button4"
+        android:onClick="startTetris"
+        android:text="@string/tetris" />
+
 </RelativeLayout>
