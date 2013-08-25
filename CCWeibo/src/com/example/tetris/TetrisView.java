@@ -220,7 +220,7 @@ public class TetrisView extends SurfaceView implements Callback {
 				// we find a collision, game over
 				if (colorMatrix[x + i][y + j] != INITIAL_BLOCK_COLOR) {
 					return false;
-				} else {
+				} else if (tmpMatrix[i][j] != 0) {
 					colorMatrix[x + i][y + j] = tmpMatrix[i][j];
 				}
 
