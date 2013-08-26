@@ -50,6 +50,9 @@ public class TetrisView extends SurfaceView implements Callback {
 
 	private int _level;
 	private int _score;
+	private int _currentHeight;
+
+	private boolean _justStart;
 
 	private Block _nextBlock;
 
@@ -134,8 +137,6 @@ public class TetrisView extends SurfaceView implements Callback {
 		_previewMatrixPaint = new Paint();
 		_separatorPaint = new Paint();
 		_staticPaint = new Paint();
-		_level = 1;
-		_score = 0;
 	}
 
 	// pause the game, we want to save game state after returning to game
@@ -153,16 +154,32 @@ public class TetrisView extends SurfaceView implements Callback {
 	}
 
 	private void updateComponents() {
-		updateGameMatrix();
-		updatePreviewMatrix();
+		// if it's just started, we don't want to update matrixs as they are
+		// already updated
+		if (_justStart) {
+			updateGameMatrix();
+			updatePreviewMatrix();
+			_justStart = false;
+		}
 		updateTimer();
 		updateScoreBoard();
 	}
 
 	private void updateGameMatrix() {
-		for (int i = 0; i < MATRIX_HEIGHT; i++)
-			for (int j = 0; j < MATRIX_WIDTH; j++)
-				_gameMatrix[i][j] = INITIAL_BLOCK_COLOR;
+		// first check if we need to remove lines from bottom to _currentHeight
+		boolean remove;
+		for (int i = 0; i <= _currentHeight; i--) {
+			remove = true;
+			for (int j = 0; j < MATRIX_WIDTH; j++) {
+				// once there's one block that's not filled we don't remove
+				if (_gameMatrix[i][j] == INITIAL_BLOCK_COLOR) {
+					remove = false;
+					break;
+				}
+			}
+		}
+
+		// move the floating block one line down
 
 	}
 
@@ -279,7 +296,8 @@ public class TetrisView extends SurfaceView implements Callback {
 		// each block has a black frame and filled with color at
 		// _colorMatrix[i][j]
 		Point currentPoint = new Point(0, _screenHeight);
-		for (int i = MATRIX_HEIGHT - 1; i >= 0; i--) {
+		// for (int i = MATRIX_HEIGHT - 1; i >= 0; i--) {
+		for (int i = 0; i < MATRIX_HEIGHT - 1; i++) {
 			for (int j = 0; j < MATRIX_WIDTH; j++) {
 				// draw edge
 				_gameMatrixPaint.setColor(SQUARE_EDGE_COLOR);
@@ -363,9 +381,38 @@ public class TetrisView extends SurfaceView implements Callback {
 
 	@Override
 	public void surfaceCreated(SurfaceHolder holder) {
+		newGame(holder);
+	}
+
+	private void newGame(SurfaceHolder holder) {
+		initializeParams();
+		initializeMatrix();
 		_thread = new TetrisThread(holder);
 		_thread.setRunning(true);
 		_thread.start();
+	}
+
+	private void initializeParams() {
+		_level = 1;
+		_score = 0;
+		_currentHeight = 0;
+	}
+
+	// this is called when a new game is started, add a random block in
+	// _gameMatrix and a random block in _previewMatrix
+	private void initializeMatrix() {
+		_justStart = true;
+		for (int i = 0; i < MATRIX_HEIGHT; i++)
+			for (int j = 0; j < MATRIX_WIDTH; j++)
+				_gameMatrix[i][j] = INITIAL_BLOCK_COLOR;
+		for (int i = 0; i < PREVIEW_EDGE; i++)
+			for (int j = 0; j < PREVIEW_EDGE; j++)
+				_previewMatrix[i][j] = INITIAL_BLOCK_COLOR;
+
+		addBlockToMatrix(_gameMatrix, 4, 0, getRandomBlock());
+
+		_nextBlock = getRandomBlock();
+		addBlockToMatrix(_previewMatrix, 0, 0, _nextBlock);
 	}
 
 	@Override
@@ -414,7 +461,9 @@ public class TetrisView extends SurfaceView implements Callback {
 				long elapsed = currentFrameTime - previousFrameTime;
 
 				// we want to update the canvas every 100 milis
-				if (elapsed < 100) {
+				// just a simple speed controller
+				// to implement 'falling immediately' we need a fancier one
+				if (elapsed < 1000 - _level * 50) {
 					continue;
 				}
 				try {
