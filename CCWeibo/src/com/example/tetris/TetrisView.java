@@ -1,6 +1,8 @@
 package com.example.tetris;
 
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -54,7 +56,9 @@ public class TetrisView extends SurfaceView implements Callback {
 
 	private boolean _justStart;
 
+	private Block _currentBlock;
 	private Block _nextBlock;
+	private volatile Set<Point> _currentBlockPoints;
 
 	private int getRandomColor() {
 		switch (rand.nextInt(7)) {
@@ -137,6 +141,7 @@ public class TetrisView extends SurfaceView implements Callback {
 		_previewMatrixPaint = new Paint();
 		_separatorPaint = new Paint();
 		_staticPaint = new Paint();
+		_currentBlockPoints = new HashSet<Point>();
 	}
 
 	// pause the game, we want to save game state after returning to game
@@ -157,30 +162,98 @@ public class TetrisView extends SurfaceView implements Callback {
 		// if it's just started, we don't want to update matrixs as they are
 		// already updated
 		if (_justStart) {
-			updateGameMatrix();
-			updatePreviewMatrix();
 			_justStart = false;
+			return;
+		}
+
+		boolean addAnotherBlock = updateGameMatrix();
+		if (addAnotherBlock) {
+			addBlockToMatrix(_gameMatrix, MATRIX_HEIGHT - 1, 4, _nextBlock);
+			updatePreviewMatrix();
 		}
 		updateTimer();
 		updateScoreBoard();
 	}
 
-	private void updateGameMatrix() {
-		// first check if we need to remove lines from bottom to _currentHeight
-		boolean remove;
-		for (int i = 0; i <= _currentHeight; i--) {
-			remove = true;
-			for (int j = 0; j < MATRIX_WIDTH; j++) {
-				// once there's one block that's not filled we don't remove
-				if (_gameMatrix[i][j] == INITIAL_BLOCK_COLOR) {
-					remove = false;
-					break;
-				}
+	/**
+	 * First dropping the floating block one line if applicable
+	 * 
+	 * then remove all full lines
+	 * 
+	 * @return whether we need to add another block to the game
+	 */
+	private boolean updateGameMatrix() {
+		// first move the floating block one line down
+		boolean canDropOneLine = true;
+		Point tmpPoint = new Point();
+		for (Point p : _currentBlockPoints) {
+			tmpPoint.set(p.x - 1, p.y);
+			// TODO: _currentBlockPoints isn't working correctly, contention?
+			if (_currentBlockPoints.contains(tmpPoint)) {
+				continue;
+			}
+			// if we hit bottom or the lower block is already set then we can't
+			// continue dropping
+			if ((p.x < 0)
+					|| (_gameMatrix[tmpPoint.x][tmpPoint.y] != INITIAL_BLOCK_COLOR)) {
+				canDropOneLine = false;
+				break;
 			}
 		}
 
-		// move the floating block one line down
+		if (canDropOneLine) {
+			for (Point p : _currentBlockPoints) {
+				_gameMatrix[p.x][p.y] = INITIAL_BLOCK_COLOR;
+				p.offset(-1, 0);
+			}
+			for (Point p : _currentBlockPoints) {
+				_gameMatrix[p.x][p.y] = _currentBlock.color;
+			}
+			// TODO: update _currentHeight
+		}
 
+		// then check if we need to remove lines from bottom to _currentHeight
+		int currentRow = 0;
+		int currentBottom = Integer.MAX_VALUE;
+		while (currentRow < _currentHeight) {
+			for (int i = 0; i < MATRIX_WIDTH; i++) {
+				if (_gameMatrix[currentRow][i] == INITIAL_BLOCK_COLOR) {
+					// if this line can't be removed, we either skip it or drop
+					// it to currentBottom
+
+					// currentBottom is not empty, need to drop
+					if (currentBottom != Integer.MAX_VALUE) {
+						moveRow(_gameMatrix, currentRow, currentBottom);
+						currentBottom = currentRow;
+					}
+					currentRow++;
+					break;
+				}
+			}
+			// if we can reach here then currentRow needs to be removed
+			if (currentBottom > currentRow)
+				currentBottom = currentRow;
+			// clear the row
+			clearRow(_gameMatrix, currentRow);
+			currentRow++;
+		}
+
+		return !canDropOneLine;
+	}
+
+	// move the currentRow to the currentBottom row of the matrix, clear
+	// currentRow
+	private void moveRow(int[][] matrix, int currentRow, int currentBottom) {
+		for (int i = 0; i < MATRIX_WIDTH; i++) {
+			matrix[currentBottom][i] = matrix[currentRow][i];
+			matrix[currentRow][i] = INITIAL_BLOCK_COLOR;
+		}
+	}
+
+	private void clearRow(int[][] matrix, int rowToClear) {
+		for (int i = 0; i < MATRIX_WIDTH; i++) {
+			matrix[rowToClear][i] = INITIAL_BLOCK_COLOR;
+		}
 	}
 
 	private void updatePreviewMatrix() {
@@ -188,7 +261,7 @@ public class TetrisView extends SurfaceView implements Callback {
 			for (int j = 0; j < PREVIEW_EDGE; j++)
 				_previewMatrix[i][j] = INITIAL_BLOCK_COLOR;
 		_nextBlock = getRandomBlock();
-		addBlockToMatrix(_previewMatrix, 0, 0, _nextBlock);
+		addBlockToMatrix(_previewMatrix, PREVIEW_EDGE - 1, 0, _nextBlock);
 	}
 
 	/**
@@ -235,10 +308,10 @@ public class TetrisView extends SurfaceView implements Callback {
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < 4; j++) {
 				// we find a collision, game over
-				if (colorMatrix[x + i][y + j] != INITIAL_BLOCK_COLOR) {
+				if (colorMatrix[x - i][y + j] != INITIAL_BLOCK_COLOR) {
 					return false;
 				} else if (tmpMatrix[i][j] != 0) {
-					colorMatrix[x + i][y + j] = tmpMatrix[i][j];
+					colorMatrix[x - i][y + j] = tmpMatrix[i][j];
 				}
 
 			}
@@ -396,12 +469,12 @@ public class TetrisView extends SurfaceView implements Callback {
 		_level = 1;
 		_score = 0;
 		_currentHeight = 0;
+		_justStart = true;
 	}
 
 	// this is called when a new game is started, add a random block in
 	// _gameMatrix and a random block in _previewMatrix
 	private void initializeMatrix() {
-		_justStart = true;
 		for (int i = 0; i < MATRIX_HEIGHT; i++)
 			for (int j = 0; j < MATRIX_WIDTH; j++)
 				_gameMatrix[i][j] = INITIAL_BLOCK_COLOR;
@@ -409,16 +482,25 @@ public class TetrisView extends SurfaceView implements Callback {
 			for (int j = 0; j < PREVIEW_EDGE; j++)
 				_previewMatrix[i][j] = INITIAL_BLOCK_COLOR;
 
-		addBlockToMatrix(_gameMatrix, 4, 0, getRandomBlock());
+		_currentBlock = getRandomBlock();
+		addBlockToMatrix(_gameMatrix, MATRIX_HEIGHT - 1, 4, _currentBlock);
+
+		// add four points to the current Blocks
+		for (int i = MATRIX_HEIGHT - 1; i > MATRIX_HEIGHT - 5; i--) {
+			for (int j = 0; j < MATRIX_WIDTH; j++) {
+				if (_gameMatrix[i][j] != INITIAL_BLOCK_COLOR) {
+					_currentBlockPoints.add(new Point(i, j));
+				}
+			}
+		}
 
 		_nextBlock = getRandomBlock();
-		addBlockToMatrix(_previewMatrix, 0, 0, _nextBlock);
+		addBlockToMatrix(_previewMatrix, PREVIEW_EDGE - 1, 0, _nextBlock);
 	}
 
 	@Override
 	public void surfaceChanged(SurfaceHolder holder, int format, int width,
 			int height) {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -433,7 +515,6 @@ public class TetrisView extends SurfaceView implements Callback {
 				_thread.join();
 				retry = false;
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

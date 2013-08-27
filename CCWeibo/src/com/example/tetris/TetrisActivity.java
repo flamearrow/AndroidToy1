@@ -41,7 +41,7 @@ public class TetrisActivity extends Activity {
 				_tetrisView.moveLR(e);
 				return super.onSingleTapConfirmed(e);
 			}
-			
+
 		});
 	}
 
