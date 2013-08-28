@@ -1,6 +1,8 @@
 package com.example.tetris;
 
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
@@ -58,7 +60,8 @@ public class TetrisView extends SurfaceView implements Callback {
 
 	private Block _currentBlock;
 	private Block _nextBlock;
-	private volatile Set<Point> _currentBlockPoints;
+	private Set<Point> _currentBlockPoints;
+	private List<Point> _backList;
 
 	private int getRandomColor() {
 		switch (rand.nextInt(7)) {
@@ -142,6 +145,7 @@ public class TetrisView extends SurfaceView implements Callback {
 		_separatorPaint = new Paint();
 		_staticPaint = new Paint();
 		_currentBlockPoints = new HashSet<Point>();
+		_backList = new LinkedList<Point>();
 	}
 
 	// pause the game, we want to save game state after returning to game
@@ -188,13 +192,12 @@ public class TetrisView extends SurfaceView implements Callback {
 		Point tmpPoint = new Point();
 		for (Point p : _currentBlockPoints) {
 			tmpPoint.set(p.x - 1, p.y);
-			// TODO: _currentBlockPoints isn't working correctly, contention?
 			if (_currentBlockPoints.contains(tmpPoint)) {
 				continue;
 			}
 			// if we hit bottom or the lower block is already set then we can't
 			// continue dropping
-			if ((p.x < 0)
+			if ((tmpPoint.x < 0)
 					|| (_gameMatrix[tmpPoint.x][tmpPoint.y] != INITIAL_BLOCK_COLOR)) {
 				canDropOneLine = false;
 				break;
@@ -202,13 +205,19 @@ public class TetrisView extends SurfaceView implements Callback {
 		}
 
 		if (canDropOneLine) {
+			_backList.clear();
 			for (Point p : _currentBlockPoints) {
 				_gameMatrix[p.x][p.y] = INITIAL_BLOCK_COLOR;
 				p.offset(-1, 0);
 			}
 			for (Point p : _currentBlockPoints) {
 				_gameMatrix[p.x][p.y] = _currentBlock.color;
+				_backList.add(p);
 			}
+			// important: we need to update Points index in the hashset
+			_currentBlockPoints.clear();
+			_currentBlockPoints.addAll(_backList);
+
 			// TODO: update _currentHeight
 		}
 
