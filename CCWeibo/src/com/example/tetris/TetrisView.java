@@ -32,9 +32,9 @@ public class TetrisView extends SurfaceView implements Callback {
 	private static final int PREVIEW_EDGE = 4;
 	private static final int SQUARE_EDGE_WIDTH = 2;
 	private static final int SQUARE_EDGE_COLOR = Color.YELLOW;
-	private static final int SEPARATOR_COLOR = Color.GRAY;
+	private static final int SEPARATOR_COLOR = Color.DKGRAY;
 	private static final double GOLDEN_RATIO = 0.618;
-	private static final int INITIAL_BLOCK_COLOR = Color.DKGRAY;
+	private static final int INITIAL_BLOCK_COLOR = Color.GRAY;
 
 	private TetrisThread _thread;
 
@@ -172,11 +172,23 @@ public class TetrisView extends SurfaceView implements Callback {
 
 		boolean addAnotherBlock = updateGameMatrix();
 		if (addAnotherBlock) {
-			addBlockToMatrix(_gameMatrix, MATRIX_HEIGHT - 1, 4, _nextBlock);
+			boolean gameOver = addBlockToMatrix(_gameMatrix, MATRIX_HEIGHT - 1,
+					4, _nextBlock);
+			if (gameOver) {
+				stopGame();
+			}
+			_currentBlock = _nextBlock;
 			updatePreviewMatrix();
 		}
 		updateTimer();
 		updateScoreBoard();
+	}
+
+	/**
+	 * stop game, prompt for new game or not
+	 */
+	private void stopGame() {
+		// TODO implement this
 	}
 
 	/**
@@ -281,7 +293,7 @@ public class TetrisView extends SurfaceView implements Callback {
 	 * @param x
 	 * @param y
 	 * @param newBlock
-	 * @return whether the new block successfully added
+	 * @return whether game is over
 	 */
 	private boolean addBlockToMatrix(int[][] colorMatrix, int x, int y,
 			Block newBlock) {
@@ -318,14 +330,15 @@ public class TetrisView extends SurfaceView implements Callback {
 			for (int j = 0; j < 4; j++) {
 				// we find a collision, game over
 				if (colorMatrix[x - i][y + j] != INITIAL_BLOCK_COLOR) {
-					return false;
+					return true;
 				} else if (tmpMatrix[i][j] != 0) {
 					colorMatrix[x - i][y + j] = tmpMatrix[i][j];
 				}
 
 			}
 		}
-		return true;
+		updateCurrentBlockPoints();
+		return false;
 	}
 
 	/**
@@ -475,7 +488,7 @@ public class TetrisView extends SurfaceView implements Callback {
 	}
 
 	private void initializeParams() {
-		_level = 1;
+		_level = 10;
 		_score = 0;
 		_currentHeight = 0;
 		_justStart = true;
@@ -494,7 +507,17 @@ public class TetrisView extends SurfaceView implements Callback {
 		_currentBlock = getRandomBlock();
 		addBlockToMatrix(_gameMatrix, MATRIX_HEIGHT - 1, 4, _currentBlock);
 
-		// add four points to the current Blocks
+		updateCurrentBlockPoints();
+
+		_nextBlock = getRandomBlock();
+		addBlockToMatrix(_previewMatrix, PREVIEW_EDGE - 1, 0, _nextBlock);
+	}
+
+	/**
+	 * add four points to the current Blocks
+	 */
+	private void updateCurrentBlockPoints() {
+		_currentBlockPoints.clear();
 		for (int i = MATRIX_HEIGHT - 1; i > MATRIX_HEIGHT - 5; i--) {
 			for (int j = 0; j < MATRIX_WIDTH; j++) {
 				if (_gameMatrix[i][j] != INITIAL_BLOCK_COLOR) {
@@ -502,9 +525,6 @@ public class TetrisView extends SurfaceView implements Callback {
 				}
 			}
 		}
-
-		_nextBlock = getRandomBlock();
-		addBlockToMatrix(_previewMatrix, PREVIEW_EDGE - 1, 0, _nextBlock);
 	}
 
 	@Override
