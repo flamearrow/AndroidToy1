@@ -3,11 +3,10 @@ package com.example.tetris;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.GestureDetector;
-import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
-import android.widget.Toast;
 
 import com.example.ccweibo.R;
+import com.example.tetris.listener.TetrisGestureListener;
 
 /**
  * View is in charge of listening gesture and initialize View
@@ -18,7 +17,6 @@ import com.example.ccweibo.R;
 public class TetrisActivity extends Activity {
 	private GestureDetector _gesDect;
 	private TetrisView _tetrisView;
-	private TetrisActivity _act = this;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -27,22 +25,7 @@ public class TetrisActivity extends Activity {
 		_tetrisView = (TetrisView) findViewById(R.id.tetrisActivity);
 		// can also let TetrisActivity implements OnGestureListener, but that
 		// will leave some blank methods
-		_gesDect = new GestureDetector(this, new SimpleOnGestureListener() {
-			@Override
-			public boolean onDoubleTap(MotionEvent e) {
-				Toast.makeText(_act, "doubleTap!!", Toast.LENGTH_SHORT).show();
-				_tetrisView.rotate();
-				return true;
-			}
-
-			@Override
-			public boolean onSingleTapConfirmed(MotionEvent e) {
-				Toast.makeText(_act, "singleTap!!", Toast.LENGTH_SHORT).show();
-				_tetrisView.moveLR(e);
-				return super.onSingleTapConfirmed(e);
-			}
-
-		});
+		_gesDect = new GestureDetector(this, new TetrisGestureListener(this));
 	}
 
 	// called when this method is sent background, should either pause the
@@ -51,6 +34,10 @@ public class TetrisActivity extends Activity {
 	protected void onPause() {
 		super.onPause();
 		_tetrisView.pause();
+	}
+
+	public TetrisView getView() {
+		return _tetrisView;
 	}
 
 	@Override

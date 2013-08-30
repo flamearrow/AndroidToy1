@@ -12,7 +12,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
@@ -27,7 +26,7 @@ import com.example.ccweibo.R;
  */
 public class TetrisView extends SurfaceView implements Callback {
 	private Random rand = new Random();
-	private static final int MATRIX_HEIGHT = 24;
+	private static final int MATRIX_HEIGHT = 26;
 	private static final int MATRIX_WIDTH = 12;
 	private static final int PREVIEW_EDGE = 4;
 	private static final int SQUARE_EDGE_WIDTH = 2;
@@ -54,7 +53,6 @@ public class TetrisView extends SurfaceView implements Callback {
 
 	private int _level;
 	private int _score;
-	private int _currentHeight;
 
 	private boolean _justStart;
 
@@ -62,6 +60,8 @@ public class TetrisView extends SurfaceView implements Callback {
 	private Block _nextBlock;
 	private Set<Point> _currentBlockPoints;
 	private List<Point> _backList;
+
+	private Point _upperLeft;
 
 	private int getRandomColor() {
 		switch (rand.nextInt(7)) {
@@ -133,7 +133,6 @@ public class TetrisView extends SurfaceView implements Callback {
 	// Note: customized View needs to implement this two param constructor
 	public TetrisView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-
 		// this call is ensuring surfaceCreated() method will be called
 		getHolder().addCallback(this);
 
@@ -146,19 +145,16 @@ public class TetrisView extends SurfaceView implements Callback {
 		_staticPaint = new Paint();
 		_currentBlockPoints = new HashSet<Point>();
 		_backList = new LinkedList<Point>();
+		_upperLeft = new Point(-1, -1);
 	}
 
 	// pause the game, we want to save game state after returning to game
+	// TODO: need save state
 	public void pause() {
 		surfaceDestroyed(null);
 	}
 
 	public void releaseResources() {
-
-	}
-
-	// rotate the current active block
-	public void rotate() {
 
 	}
 
@@ -173,7 +169,7 @@ public class TetrisView extends SurfaceView implements Callback {
 		boolean addAnotherBlock = updateGameMatrix();
 		if (addAnotherBlock) {
 			boolean gameOver = addBlockToMatrix(_gameMatrix, MATRIX_HEIGHT - 1,
-					4, _nextBlock);
+					4, _nextBlock, true);
 			if (gameOver) {
 				stopGame();
 			}
@@ -200,66 +196,40 @@ public class TetrisView extends SurfaceView implements Callback {
 	 */
 	private boolean updateGameMatrix() {
 		// first move the floating block one line down
-		boolean canDropOneLine = true;
-		Point tmpPoint = new Point();
-		for (Point p : _currentBlockPoints) {
-			tmpPoint.set(p.x - 1, p.y);
-			if (_currentBlockPoints.contains(tmpPoint)) {
-				continue;
-			}
-			// if we hit bottom or the lower block is already set then we can't
-			// continue dropping
-			if ((tmpPoint.x < 0)
-					|| (_gameMatrix[tmpPoint.x][tmpPoint.y] != INITIAL_BLOCK_COLOR)) {
-				canDropOneLine = false;
-				break;
-			}
-		}
+		boolean droppedOneLine = moveCurrentBlock(new Point(-1, 0));
 
-		if (canDropOneLine) {
-			_backList.clear();
-			for (Point p : _currentBlockPoints) {
-				_gameMatrix[p.x][p.y] = INITIAL_BLOCK_COLOR;
-				p.offset(-1, 0);
-			}
-			for (Point p : _currentBlockPoints) {
-				_gameMatrix[p.x][p.y] = _currentBlock.color;
-				_backList.add(p);
-			}
-			// important: we need to update Points index in the hashset
-			_currentBlockPoints.clear();
-			_currentBlockPoints.addAll(_backList);
+		// we only remove line when a block hits ground
+		if (!droppedOneLine) {
+			// then check if we need to remove lines from bottom to
+			// _currentHeight
+			int currentRow = 0;
+			int currentBottom = Integer.MAX_VALUE;
+			here: while (currentRow < MATRIX_HEIGHT) {
+				for (int i = 0; i < MATRIX_WIDTH; i++) {
+					if (_gameMatrix[currentRow][i] == INITIAL_BLOCK_COLOR) {
+						// if this line can't be removed, we either skip it or
+						// drop
+						// it to currentBottom
 
-			// TODO: update _currentHeight
-		}
-
-		// then check if we need to remove lines from bottom to _currentHeight
-		int currentRow = 0;
-		int currentBottom = Integer.MAX_VALUE;
-		while (currentRow < _currentHeight) {
-			for (int i = 0; i < MATRIX_WIDTH; i++) {
-				if (_gameMatrix[currentRow][i] == INITIAL_BLOCK_COLOR) {
-					// if this line can't be removed, we either skip it or drop
-					// it to currentBottom
-
-					// currentBottom is not empty, need to drop
-					if (currentBottom != Integer.MAX_VALUE) {
-						moveRow(_gameMatrix, currentRow, currentBottom);
-						currentBottom = currentRow;
+						// currentBottom is not empty, need to drop
+						if (currentBottom != Integer.MAX_VALUE) {
+							moveRow(_gameMatrix, currentRow, currentBottom);
+							currentBottom++;
+						}
+						currentRow++;
+						continue here;
 					}
-					currentRow++;
-					break;
 				}
+				// if we can reach here then currentRow needs to be removed
+				if (currentBottom > currentRow)
+					currentBottom = currentRow;
+				// clear the row
+				clearRow(_gameMatrix, currentRow);
+				currentRow++;
 			}
-			// if we can reach here then currentRow needs to be removed
-			if (currentBottom > currentRow)
-				currentBottom = currentRow;
-			// clear the row
-			clearRow(_gameMatrix, currentRow);
-			currentRow++;
 		}
 
-		return !canDropOneLine;
+		return !droppedOneLine;
 	}
 
 	// move the currentRow to the currentBottom row of the matrix, clear
@@ -282,7 +252,7 @@ public class TetrisView extends SurfaceView implements Callback {
 			for (int j = 0; j < PREVIEW_EDGE; j++)
 				_previewMatrix[i][j] = INITIAL_BLOCK_COLOR;
 		_nextBlock = getRandomBlock();
-		addBlockToMatrix(_previewMatrix, PREVIEW_EDGE - 1, 0, _nextBlock);
+		addBlockToMatrix(_previewMatrix, PREVIEW_EDGE - 1, 0, _nextBlock, false);
 	}
 
 	/**
@@ -294,77 +264,33 @@ public class TetrisView extends SurfaceView implements Callback {
 	 * @param y
 	 * @param newBlock
 	 * @return whether game is over
+	 * @return updateUpperLeft whether to update the upperLeft point denoting
+	 *         the current floating block
 	 */
 	private boolean addBlockToMatrix(int[][] colorMatrix, int x, int y,
-			Block newBlock) {
+			Block newBlock, boolean updateUpperLeft) {
 		// with hex value defined, just apply it to a 4*4 matrix
 		int count = 0;
-		int value = newBlock.value.gethexV();
+		int value = newBlock.getHexValue();
 		int color = newBlock.color;
-		int[][] tmpMatrix = new int[4][4];
-		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 4; j++) {
-				if (((value >> (count++)) & 1) > 0) {
-					tmpMatrix[i][j] = color;
-				}
-			}
-		}
-		// rotate to the correct direction
-		switch (newBlock.direction) {
-		case Right:
-			rotateMatrix(tmpMatrix, 1);
-			break;
-		case Down:
-			rotateMatrix(tmpMatrix, 2);
-			break;
-		case Left:
-			rotateMatrix(tmpMatrix, 3);
-			break;
-		case Up:
-		default:
-			break;
-		}
 
-		// apply the tmp matrix to colorMatrix
+		// apply the value to colorMatrix
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < 4; j++) {
 				// we find a collision, game over
 				if (colorMatrix[x - i][y + j] != INITIAL_BLOCK_COLOR) {
 					return true;
-				} else if (tmpMatrix[i][j] != 0) {
-					colorMatrix[x - i][y + j] = tmpMatrix[i][j];
+				} else if (((value >> (count++)) & 1) > 0) {
+					colorMatrix[x - i][y + j] = color;
 				}
 
 			}
 		}
-		updateCurrentBlockPoints();
+		if (updateUpperLeft) {
+			_upperLeft.set(x, y);
+			updateCurrentBlockPoints();
+		}
 		return false;
-	}
-
-	/**
-	 * Rotate a 4x4 matrix Rotate sequence clockwisely for n times
-	 * 
-	 * @param matrix
-	 * @param times
-	 */
-	private void rotateMatrix(int[][] matrix, int times) {
-		for (int loop = 0; loop <= times; loop++) {
-			int tmp = -1;
-			for (int i = 0; i < 4; i++) {
-				for (int j = i; j < 4; j++) {
-					tmp = matrix[i][j];
-					matrix[i][j] = matrix[j][i];
-					matrix[j][i] = tmp;
-				}
-			}
-			for (int i = 0; i < 2; i++) {
-				for (int j = 0; j < 4; j++) {
-					tmp = matrix[i][j];
-					matrix[i][j] = matrix[3 - i][j];
-					matrix[3 - i][j] = tmp;
-				}
-			}
-		}
 	}
 
 	private void updateTimer() {
@@ -385,7 +311,7 @@ public class TetrisView extends SurfaceView implements Callback {
 		// and a separator
 		int blockEdge = _screenWidth / (MATRIX_WIDTH + PREVIEW_EDGE + 1);
 
-		// first draw the game secion
+		// first draw the game section
 
 		// starting from bottom left, draw a MATRIX_HEIGHT x MATRIX_WIDTH matrix
 		// each block has a black frame and filled with color at
@@ -399,7 +325,7 @@ public class TetrisView extends SurfaceView implements Callback {
 				canvas.drawRect(currentPoint.x, currentPoint.y - blockEdge,
 						currentPoint.x + blockEdge, currentPoint.y,
 						_gameMatrixPaint);
-				// draw squre
+				// draw square
 				_gameMatrixPaint.setColor(_gameMatrix[i][j]);
 				canvas.drawRect(currentPoint.x + SQUARE_EDGE_WIDTH,
 						currentPoint.y - blockEdge + SQUARE_EDGE_WIDTH,
@@ -427,7 +353,7 @@ public class TetrisView extends SurfaceView implements Callback {
 		// then draw the preview section, should be in center of top part
 		currentPoint.set(currentPoint.x + blockEdge / 2, currentPoint.y / 2);
 		currentPoint.offset(0, -PREVIEW_EDGE / 2 * blockEdge);
-		for (int i = 0; i < PREVIEW_EDGE; i++) {
+		for (int i = PREVIEW_EDGE - 1; i >= 0; i--) {
 			for (int j = 0; j < PREVIEW_EDGE; j++) {
 				// draw edge
 				_previewMatrixPaint.setColor(SQUARE_EDGE_COLOR);
@@ -468,10 +394,110 @@ public class TetrisView extends SurfaceView implements Callback {
 
 	}
 
+	/**
+	 * check if the current Block contained in _currentBlockPoints could be
+	 * applied to the delta
+	 * 
+	 * @param delta
+	 * @return succeed
+	 */
+	private boolean moveCurrentBlock(Point delta) {
+		boolean succeed = true;
+		Point tmpPoint = new Point();
+		for (Point p : _currentBlockPoints) {
+			tmpPoint.set(p.x + delta.x, p.y + delta.y);
+			if (_currentBlockPoints.contains(tmpPoint)) {
+				continue;
+			}
+			// if we hit boundary or the new block is already set then we can't
+			// continue dropping
+			if ((tmpPoint.x < 0 || tmpPoint.y < 0 || tmpPoint.y >= MATRIX_WIDTH)
+					|| (_gameMatrix[tmpPoint.x][tmpPoint.y] != INITIAL_BLOCK_COLOR)) {
+				succeed = false;
+				break;
+			}
+		}
+
+		if (succeed) {
+			_backList.clear();
+			for (Point p : _currentBlockPoints) {
+				_gameMatrix[p.x][p.y] = INITIAL_BLOCK_COLOR;
+				p.offset(delta.x, delta.y);
+			}
+			for (Point p : _currentBlockPoints) {
+				_gameMatrix[p.x][p.y] = _currentBlock.color;
+				_backList.add(p);
+			}
+			// important: we need to update Points index in the hashset
+			_currentBlockPoints.clear();
+			_currentBlockPoints.addAll(_backList);
+
+			_upperLeft.offset(delta.x, delta.y);
+		}
+		return succeed;
+	}
+
 	// move the current active block to left/right if according whether this tap
 	// happens at left/right half of the screen
-	public void moveLR(MotionEvent e) {
+	public void moveLeft() {
+		moveCurrentBlock(new Point(0, -1));
+	}
 
+	public void moveRight() {
+		moveCurrentBlock(new Point(0, 1));
+	}
+
+	/**
+	 * rotate the current active block
+	 * 
+	 * @return succeed or not
+	 */
+	public boolean rotate() {
+		_currentBlock.rotate();
+
+		int count = 0;
+		int value = _currentBlock.getHexValue();
+		int color = _currentBlock.color;
+		Point tmpP = new Point(-1, -1);
+
+		for (int i = _upperLeft.x; i > _upperLeft.x - 4; i--) {
+			for (int j = _upperLeft.y; j < _upperLeft.y + 4; j++) {
+				if (((value >> (count++)) & 1) > 0) {
+					tmpP.set(i, j);
+					// if it's outside of screen or it's already occupied then
+					// we can't rotate
+					if (j < 0
+							|| (!_currentBlockPoints.contains(tmpP) && _gameMatrix[i][j] != INITIAL_BLOCK_COLOR)) {
+						_currentBlock.rRotate();
+						return false;
+					}
+				}
+			}
+		}
+
+		// safe to update now
+		for (Point p : _currentBlockPoints) {
+			_gameMatrix[p.x][p.y] = INITIAL_BLOCK_COLOR;
+		}
+
+		_currentBlockPoints.clear();
+		count = 0;
+		for (int i = _upperLeft.x; i > _upperLeft.x - 4; i--) {
+			for (int j = _upperLeft.y; j < _upperLeft.y + 4; j++) {
+				if (((value >> (count++)) & 1) > 0) {
+					_gameMatrix[i][j] = color;
+					_currentBlockPoints.add(new Point(i, j));
+				}
+			}
+		}
+
+		return true;
+	}
+
+	// drop the current block
+	// drop one line first...
+	public void drop() {
+		moveCurrentBlock(new Point(-3, 0));
 	}
 
 	@Override
@@ -490,7 +516,6 @@ public class TetrisView extends SurfaceView implements Callback {
 	private void initializeParams() {
 		_level = 10;
 		_score = 0;
-		_currentHeight = 0;
 		_justStart = true;
 	}
 
@@ -505,12 +530,12 @@ public class TetrisView extends SurfaceView implements Callback {
 				_previewMatrix[i][j] = INITIAL_BLOCK_COLOR;
 
 		_currentBlock = getRandomBlock();
-		addBlockToMatrix(_gameMatrix, MATRIX_HEIGHT - 1, 4, _currentBlock);
+		addBlockToMatrix(_gameMatrix, MATRIX_HEIGHT - 1, 4, _currentBlock, true);
 
 		updateCurrentBlockPoints();
 
 		_nextBlock = getRandomBlock();
-		addBlockToMatrix(_previewMatrix, PREVIEW_EDGE - 1, 0, _nextBlock);
+		addBlockToMatrix(_previewMatrix, PREVIEW_EDGE - 1, 0, _nextBlock, false);
 	}
 
 	/**
