@@ -63,7 +63,7 @@ public class FavouriteTwitterAct extends Activity {
 	// SharedPreferences will store the entries in this file:
 	// /data/data/YOUR_PACKAGE_NAME/shared_prefs/YOUR_PREFS_NAME.xml
 	// note: makeTag will only add data to file, to build it to GUI, need to
-	// invoke makeTagGUI
+	// invoke makeTagGUI 
 	private void makeTag(String query, String tag) {
 		String originalQuery = savedSearches.getString(tag, null);
 		SharedPreferences.Editor preferencesEditor = savedSearches.edit();
