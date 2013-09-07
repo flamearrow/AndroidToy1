@@ -21,7 +21,7 @@ import android.widget.TableRow;
 public class FavouriteTwitterAct extends Activity {
 	// like a map
 	private SharedPreferences savedSearches;
-	// populating the layout programatically
+	// populating the layout programatically 
 	private TableLayout queryTableLayout;
 	private EditText queryEditText;
 	private EditText tagEditText;
