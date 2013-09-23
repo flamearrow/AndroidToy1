@@ -12,8 +12,8 @@ public class TetrisGestureListener extends SimpleOnGestureListener {
 	private TetrisView _tetrisView;
 
 	// we need max sensibility
-	private static final int SWIPE_THRESHOLD = 100;
-	private static final int SWIPE_VELOCITY_THRESHOLD = 50;
+	// private static final int SWIPE_THRESHOLD = 100;
+	// private static final int SWIPE_VELOCITY_THRESHOLD = 50;
 
 	public TetrisGestureListener(TetrisActivity act) {
 		_act = act;
