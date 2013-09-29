@@ -281,6 +281,8 @@ public class CannonView extends SurfaceView implements Callback {
 		// dialogBuilder.create().show();
 		// to make sure the dialog is shown when the current thread is the UI
 		// thread?
+		// UI thread is the main thread, show() can only be called on UI thread,
+		// but here we are on rendering thread
 		activity.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
