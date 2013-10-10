@@ -6,12 +6,13 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="9"
+        android:minSdkVersion="12"
         android:targetSdkVersion="18"
         tools:ignore="OldTargetApi" />
 
     <application
         android:allowBackup="true"
+        android:hardwareAccelerated="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name" >
         <activity
@@ -74,6 +75,11 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name="com.example.spotOn.SpotOnActivity"
+            android:label="@string/spoton"
+            android:screenOrientation="landscape" >
         </activity>
     </application>
 

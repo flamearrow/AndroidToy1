@@ -75,7 +75,11 @@
     <string name="lose">You lose!</string>
     <string name="time_remaining_format">Time remaining: %.1f seconds</string>
     <string name="tetris">Tetris</string>
-    <string name="level">level</string>
+    <string name="level">Level</string>
     <string name="score">score</string>
+
+    <!-- Used by spotOn -->
+    <string name="spoton">Spot On</string>
+    <string name="highscore">High Score</string>
 
 </resources>
