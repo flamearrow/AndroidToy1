@@ -36,6 +36,7 @@
         <activity
             android:name=".FavouriteTwitterAct"
             android:label="@string/fav_twitter"
+            android:theme="@android:style/Theme.NoTitleBar"
             android:windowSoftInputMode="stateAlwaysHidden" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -79,7 +80,8 @@
         <activity
             android:name="com.example.spotOn.SpotOnActivity"
             android:label="@string/spoton"
-            android:screenOrientation="landscape" >
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.NoTitleBar" >
         </activity>
     </application>
 
